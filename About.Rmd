@@ -1,0 +1,8 @@
+---
+title: "Edwardsiella"
+output: html_document
+---
+
+
+Edwardsiella is a genus of sea anemones within the Edwardsiidae, a family of primarily small, burrowing sea anemones with a relatively simple morphology.  The lined sea anemone, *Edwardsiella lineata*, has evolved a derived life history in which the larvae parasitize the pelagic ctenophore, *Mnemiopsis leidyi*.
+
