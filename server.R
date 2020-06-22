@@ -12,7 +12,7 @@ library(seqinr)
 server <- function(input, output, session){
     
     custom_db <- c("El_Transcriptome2014")
-    custom_db_path <- c("~/Desktop/Edwardsiella_NGS_data/EdwardsiellaBase/blast_db/EdTx")
+    custom_db_path <- c("/home/ubuntu/ShinyWebApp/blast_db/EdTx")
     Parasites <- read.csv("Edwardsiella_parasite_CollectionLocations.csv")
 
    
