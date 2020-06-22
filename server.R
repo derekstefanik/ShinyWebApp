@@ -11,7 +11,7 @@ library(withr)
 server <- function(input, output, session){
     
     custom_db <- c("El_Transcriptome2014")
-    custom_db_path <- c("/home/ubuntu/ShinyWebApp/blast_db/EdTx")
+    custom_db_path <- c("~/Desktop/Edwardsiella_NGS_data/EdwardsiellaBase/blast_db/EdTx")
     Parasites <- read.csv("Edwardsiella_parasite_CollectionLocations.csv")
 
    
@@ -121,4 +121,35 @@ server <- function(input, output, session){
             addTiles() %>%
             addMarkers(~longitude, ~latitude, popup = ~as.character(Location), label = ~as.character(Location))
     })
+    
+    ####### DATA DOWNLOAD ################
+    # Reactive value for selected dataset ----
+    EdTxFasta <- read.fasta("EdTranscriptome.gz")
+    #Write the Edwardsiella transcriptome sequences to a temporary file
+    #fname <- tempfile(pattern = "EdFasta", tmpdir = tempdir(), fileext = "fasta")
+    
+    # Reactive value for selected dataset ----
+    datasetInput <- reactive({
+        switch(input$dataset,
+               "Ed Transcriptome" == EdTxFasta)
+    })
+    
+    
+    # Table of selected dataset ----
+    # output$table <- renderTable({
+    #     datasetInput()
+    # })
+    
+    # Downloadable fasta of selected dataset ----
+    output$downloadData <- downloadHandler(
+        #This function returns a string which tells the client
+        # browser what name to use when saving the file.
+        filename = paste("EdTx","fasta", sep = "."),
+        # This function should write data to a file given to it by
+        # the argument 'file'.
+        content = function(file) {
+            # Write to a file specified by the 'file' argument
+            write.fasta(sequences = EdTxFasta, names = names(datasetInput()), open = "w", nbchar = 60, file.out = file, as.string = FALSE)
+        }
+    )
 }

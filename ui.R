@@ -64,6 +64,33 @@ ui <- fluidPage(theme = shinytheme("simplex"),
                       leafletOutput("mymap", width="500px", height="500px")
                     )
                 )
+              ),
+              
+              # Download Panel title ----
+              tabPanel("Resources",
+                headerPanel('Download Genomic Sequences'),
+                
+                
+                # Sidebar with a slider input for number of bins
+                sidebarLayout(
+                  sidebarPanel(
+                    # Input: Choose dataset ----
+                    selectInput("dataset", "Choose a dataset:",
+                                choices = c("Ed Transcriptome")),
+                    
+                    # Button
+                    downloadButton("downloadData", "Download")
+                    
+                  ),
+                  
+                  # Main panel for displaying outputs ----
+                  mainPanel(
+                    headerPanel('Edwardsiella Genomic Resources'),
+                    tableOutput("table")
+                  )
+                )
+                )
+                
               )
-            )
+            
 )
