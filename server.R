@@ -8,12 +8,39 @@ library(DT)
 library(leaflet)
 library(withr)
 library(seqinr)
+library(lubridate)
+library(ggplot2)
+library(shape)
+library(scales)
 
+
+########## Prepare ctenophore infection frequency data #################
+#read in the file
+CtenoInfections <- read.csv(file = "Data/Cteno-infections_dates_longFormat.csv", stringsAsFactors = FALSE)
+
+#transform character date format into date format
+CtenoInfections$Date <- as.Date(CtenoInfections$Date)
+
+#pull out the year from the date and create a year column for each row
+CtenoInfections$year <- year(CtenoInfections$Date)
+
+#add column for MonthDay converted from the date
+CtenoInfections$MonthDay <- format(CtenoInfections$Date, "%m-%d")
+
+#group by year and create new dataframe
+CtenoMonthDay <- CtenoInfections %>% group_by(year, MonthDay)
+
+#transform character MonthDay format into date format
+CtenoMonthDay$MonthDay <- as.Date(CtenoMonthDay$MonthDay, format = "%m-%d")
+
+
+
+################# Begin Server Function ##############################
 server <- function(input, output, session){
     
     custom_db <- c("El_Transcriptome2014")
     custom_db_path <- c("/home/ubuntu/ShinyWebApp/blast_db/EdTx")
-    Parasites <- read.csv("Edwardsiella_parasite_CollectionLocations.csv")
+    Parasites <- read.csv("Data/Edwardsiella_parasite_CollectionLocations.csv")
 
    
     blastresults <- eventReactive(input$blast, {
@@ -153,4 +180,22 @@ server <- function(input, output, session){
             write.fasta(sequences = EdTxFasta, names = names(datasetInput()), open = "w", nbchar = 60, file.out = file, as.string = FALSE)
         }
     )
+    
+    ########### Infection Frequency Panel ###########################
+    observe({
+        
+        Cteno_df <- CtenoMonthDay[CtenoMonthDay$year %in% input$year,]
+        output$plot_off <- renderPlot({
+            O <-ggplot(data = Cteno_df, aes(x=MonthDay,y=Infection.Freq., color=as.factor(year))) +
+                geom_point(size =3, alpha = 0.75) +
+                scale_colour_hue(l=50) +
+                ggtitle("Infection Frequency of Ctenophores at Woods Hole") +
+                labs(x="Time",y="Infection Frequency")+
+                theme(plot.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=32, hjust=0.5)) +
+                theme(axis.title = element_text(family = "Trebuchet MS", color="#666666", face="bold", size=22))+
+                theme_classic()
+            O
+        })
+        
+    })
 }

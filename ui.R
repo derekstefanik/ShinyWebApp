@@ -2,8 +2,21 @@ library(shinythemes)
 library(DT)
 library(leaflet)
 
+#name the databaes for BLAST options
 custom_db <- c("El_Transcriptome2014")
 
+########## set up infection frequency plotting variables #######
+vars <- list("1964" = "1964",
+             "1965" = "1965",
+             "2004" = "2004",
+             "2005" = "2005",
+             "2006" = "2006",
+             "2010" = "2010",
+             "2011" = "2011",
+             "2012" = "2012",
+             "2013" = "2013")
+
+########## Shiny UI ###################
 ui <- fluidPage(theme = shinytheme("simplex"),
                 tagList(
                     tags$head(
@@ -89,8 +102,21 @@ ui <- fluidPage(theme = shinytheme("simplex"),
                     tableOutput("table")
                   )
                 )
-                )
-                
-              )
-            
+                ),
+              
+              # Infection Frequency Panel title ----
+              tabPanel("Host-parasite",
+                headerPanel( "Ctenophore Infection Frequency" ),
+              sidebarLayout(
+                sidebarPanel(
+                  selectInput("year", "Select year", vars, selected = "1964", multiple = TRUE),
+                ),
+                mainPanel(
+                  tabPanel("Plot",
+                           plotOutput("plot_off")
+                          )
+                        )
+                      )
+                    )
+          )
 )
