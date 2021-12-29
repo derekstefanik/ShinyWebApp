@@ -12,6 +12,10 @@ library(lubridate)
 library(ggplot2)
 library(shape)
 library(scales)
+library(igraph)
+library(networkD3)
+library(knitr)
+library(visNetwork)
 
 
 ########## Prepare ctenophore infection frequency data #################
@@ -33,14 +37,20 @@ CtenoMonthDay <- CtenoInfections %>% group_by(year, MonthDay)
 #transform character MonthDay format into date format
 CtenoMonthDay$MonthDay <- as.Date(CtenoMonthDay$MonthDay, format = "%m-%d")
 
-
+################# Prepare Food Network data #############################
+nodes <- read.csv("Data/EdFoodWeb_nodes.csv")
+edges <- read.csv("Data/EdFoodWeb_edges.csv")
+nodesdf <- data.frame(nodes)
+edgesdf <- data.frame(edges)
 
 ################# Begin Server Function ##############################
 server <- function(input, output, session){
     
-    custom_db <- c("El_Transcriptome2014")
-    custom_db_path <- c("/home/ubuntu/ShinyWebApp/blast_db/EdTx")
-    Parasites <- read.csv("Data/Edwardsiella_parasite_CollectionLocations.csv")
+    custom_db <- c("E. lineata Transcriptome 2014")
+    custom_db_path <- c("./blast_db/EdTx")
+    custom_db2 <- c("E. carnea Transcriptome 2018")
+    custom_db2_path <- c("./EcarneaTranscriptome/EcarneaTx")
+    Parasites <- read.csv("Data/Edwardsiella_parasite_CollectionLocationsUpdated.csv")
 
    
     blastresults <- eventReactive(input$blast, {
@@ -54,9 +64,10 @@ server <- function(input, output, session){
             db <- custom_db_path
             remote <- c("")
         } else {
-            db <- c("nr")
+            (input$db == custom_db2)
+            db <- custom_db2_path
             #add remote option for nr since we don't have a local copy
-            remote <- c("-remote")
+            remote <- c("")
         }
         
         #this makes sure the fasta is formatted properly
@@ -144,10 +155,19 @@ server <- function(input, output, session){
     })
     
     #leaflet map
+    pal <- colorFactor(c("navy", "red"), domain = unique(Parasites$LifeStage))
+    
     output$mymap <- renderLeaflet({
         leaflet(data = Parasites) %>%
             addTiles() %>%
-            addMarkers(~longitude, ~latitude, popup = ~as.character(Location), label = ~as.character(Location))
+            addCircleMarkers(~longitude, 
+                             ~latitude, 
+                             color = ~pal(LifeStage),
+                             stroke = FALSE, fillOpacity = 0.5,
+                             popup  = ~paste0(Location, 
+                                              "<br/>Collector: ", Collector,
+                                              "<br/>Year: ", Year)) %>%
+            addLegend(pal = pal, values = ~LifeStage, opacity = 1)
     })
     
     ####### DATA DOWNLOAD ################
@@ -159,7 +179,7 @@ server <- function(input, output, session){
     # Reactive value for selected dataset ----
     datasetInput <- reactive({
         switch(input$dataset,
-               "Ed Transcriptome" == EdTxFasta)
+               "E. lineata Transcriptome 2014" == EdTxFasta)
     })
     
     
@@ -197,5 +217,21 @@ server <- function(input, output, session){
             O
         })
         
+    })
+    
+    # create a dataset:
+    
+    data <- data.frame(
+        from=c("Edwardsiella", "Mnemiopsis", "Mnemiopsis"),
+        to=c("Mnemiopsis", "Beroe", "Butterfish")
+    )
+    
+    # Plot
+    output$plot_network <- renderVisNetwork({
+    
+    visNetwork(nodesdf, edgesdf) %>% visEdges(arrows = "to") %>%
+        visOptions(collapse = TRUE) %>%
+        visInteraction(navigationButtons = TRUE) %>%
+        visLegend(position="left", zoom=FALSE)
     })
 }
