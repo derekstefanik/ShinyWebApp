@@ -1,9 +1,15 @@
 library(shinythemes)
 library(DT)
 library(leaflet)
+library(igraph)
+library(networkD3)
 
 #name the databaes for BLAST options
-custom_db <- c("El_Transcriptome2014")
+custom_db <- c("E. lineata Transcriptome 2014")
+custom_db2 <- c("E. carnea Transcriptome 2018")
+
+# render foodwebpanel rmd into html so that reference citations can be styled from bibliography in the YAML
+rmarkdown::render("FoodWebPanel.Rmd", output_dir = "www")
 
 ########## set up infection frequency plotting variables #######
 vars <- list("1964" = "1964",
@@ -45,7 +51,7 @@ ui <- fluidPage(theme = shinytheme("simplex"),
                 mainPanel(
                     headerPanel('Basic Local Alignment Search Tool'),
                     textAreaInput('query', 'Enter Query Sequence:', value = "", placeholder = "", width = "600px", height="200px"),
-                    selectInput("db", "Databse:", choices=c(custom_db,"nr"), width="300px"),
+                    selectInput("db", "Databse:", choices=c(custom_db, custom_db2), width="300px"),
                     div(style="display:inline-block",
                         selectInput("program", "Program:", choices=c("blastn","tblastn","blastx","blastp","tblastx"), width="100px")),
                     div(style="display:inline-block",
@@ -89,7 +95,7 @@ ui <- fluidPage(theme = shinytheme("simplex"),
                   sidebarPanel(
                     # Input: Choose dataset ----
                     selectInput("dataset", "Choose a dataset:",
-                                choices = c("Ed Transcriptome")),
+                                choices = c("E. lineata Transcriptome 2014")),
                     
                     # Button
                     downloadButton("downloadData", "Download")
@@ -117,6 +123,18 @@ ui <- fluidPage(theme = shinytheme("simplex"),
                           )
                         )
                       )
-                    )
+                    ),
+              
+              #Tab panel for "food web" 
+              tabPanel("Food Web",
+                       mainPanel(
+                         headerPanel('Carbon Flow Through Food Web'),
+                         tabPanel("plot",
+                                  visNetworkOutput("plot_network")
+                         ),
+                         #rmarkdown::render("FoodWebPanel.Rmd", output_dir = "www"),
+                         htmltools::tags$iframe(src = "FoodWebPanel.html", width = '100%',  height = 1000,  style = "border:none;")
+                       )
+              )
           )
 )
