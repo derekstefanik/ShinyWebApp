@@ -3,6 +3,7 @@ library(DT)
 library(leaflet)
 library(igraph)
 library(networkD3)
+library(visNetwork)
 
 #name the databaes for BLAST options
 custom_db <- c("E. lineata Transcriptome 2014")
