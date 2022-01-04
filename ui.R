@@ -9,7 +9,7 @@ custom_db <- c("E. lineata Transcriptome 2014")
 custom_db2 <- c("E. carnea Transcriptome 2018")
 
 # render foodwebpanel rmd into html so that reference citations can be styled from bibliography in the YAML
-rmarkdown::render("FoodWebPanel.Rmd", output_dir = "www")
+rmarkdown::render("FoodWebPanel.Rmd", output_dir = "WWW")
 
 ########## set up infection frequency plotting variables #######
 vars <- list("1964" = "1964",
