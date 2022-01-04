@@ -1,6 +1,7 @@
 
 require(shiny)
 require(XML)
+library(XML)
 library(plyr)
 library(dplyr)
 library(DT)

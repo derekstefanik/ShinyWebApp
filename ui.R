@@ -6,8 +6,8 @@ library(networkD3)
 library(visNetwork)
 
 #name the databaes for BLAST options
-custom_db <- c("E. lineata Transcriptome 2014")
-custom_db2 <- c("E. carnea Transcriptome 2018")
+custom_db <- "E. lineata Transcriptome 2014"
+custom_db2 <- "E. carnea Transcriptome 2018"
 
 # render foodwebpanel rmd into html so that reference citations can be styled from bibliography in the YAML
 #rmarkdown::render("FoodWebPanel.Rmd", output_dir = "WWW")
