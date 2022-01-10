@@ -47,9 +47,9 @@ edgesdf <- data.frame(edges)
 server <- function(input, output, session){
     
     custom_db <- c("E. lineata Transcriptome 2014")
-    custom_db_path <- c("./blast_db/EdTx")
+    custom_db_path <- c("/home/ubuntu/ShinyWebApp/blast_db/EdTx")
     custom_db2 <- c("E. carnea Transcriptome 2018")
-    custom_db2_path <- c("./EcarneaTranscriptome/EcarneaTx")
+    custom_db2_path <- c("/home/ubuntu/ShinyWebApp/EcarneaTranscriptome/EcarneaTx")
     Parasites <- read.csv("Data/Edwardsiella_parasite_CollectionLocationsUpdated.csv")
 
    
