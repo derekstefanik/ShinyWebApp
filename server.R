@@ -16,11 +16,16 @@ library(igraph)
 library(networkD3)
 library(knitr)
 library(visNetwork)
+library(here)
 
 
 ########## Prepare ctenophore infection frequency data #################
+
+# set relative file path with 'here' library
+here("Data", "Cteno-infections_dates_longFormat.csv")
+
 #read in the file
-CtenoInfections <- read.csv(file = "Data/Cteno-infections_dates_longFormat.csv", stringsAsFactors = FALSE)
+CtenoInfections <- read.csv(here("Data", "Cteno-infections_dates_longFormat.csv"), stringsAsFactors = FALSE)
 
 #transform character date format into date format
 CtenoInfections$Date <- as.Date(CtenoInfections$Date)
@@ -38,8 +43,8 @@ CtenoMonthDay <- CtenoInfections %>% group_by(year, MonthDay)
 CtenoMonthDay$MonthDay <- as.Date(CtenoMonthDay$MonthDay, format = "%m-%d")
 
 ################# Prepare Food Network data #############################
-nodes <- read.csv("Data/EdFoodWeb_nodes.csv")
-edges <- read.csv("Data/EdFoodWeb_edges.csv")
+nodes <- read.csv(here("Data", "EdFoodWeb_nodes.csv"))
+edges <- read.csv(here("Data", "EdFoodWeb_edges.csv"))
 nodesdf <- data.frame(nodes)
 edgesdf <- data.frame(edges)
 
@@ -47,9 +52,9 @@ edgesdf <- data.frame(edges)
 server <- function(input, output, session){
     
     custom_db <- c("E. lineata Transcriptome 2014")
-    custom_db_path <- c("/home/ubuntu/ShinyWebApp/blast_db/EdTx")
+    custom_db_path <- c(here("blast_db", "EdTx"))
     custom_db2 <- c("E. carnea Transcriptome 2018")
-    custom_db2_path <- c("/home/ubuntu/ShinyWebApp/EcarneaTranscriptome/EcarneaTx")
+    custom_db2_path <- c(here("EcarneaTranscriptome", "EcarneaTx"))
     Parasites <- read.csv("Data/Edwardsiella_parasite_CollectionLocationsUpdated.csv")
 
    
